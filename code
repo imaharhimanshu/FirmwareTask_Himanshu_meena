@@ -1,0 +1,40 @@
+
+START_MARKER = 126
+DATA_PACKET = 1
+ACK_PACKET = 2
+
+MAX_SIZE = 24
+
+# ----------------------------
+# CHECKSUM (simple sum % 256)
+# ----------------------------
+def checksum(data):
+    total = 0
+    for b in data:
+        total = total + b
+    return total % 256
+
+
+
+# CREATE PACKET
+
+def create_packet(seq, packet_type, message=""):
+
+    msg_bytes = message.encode()
+
+    length = len(msg_bytes)
+
+    packet = bytearray()
+
+    packet.append(START_MARKER)
+    packet.append(packet_type)
+    packet.append(seq)
+    packet.append(length)
+
+    packet.extend(msg_bytes)
+
+    csum = checksum(packet[1:])
+    packet.append(csum)
+
+    return bytes(packet)
+
